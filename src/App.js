@@ -20,7 +20,7 @@ class App extends React.Component {
 
     this.tokenPattern = /{([^}]*)}/g;
 
-    const initialText = 'my postcode is {BC123DO}';
+    const initialText = 'my postcode is {BC123DO}\nthis is your postcode {aa321sd}';
     const tokens = this._getTokens(initialText);
 
     this.state = {
@@ -40,7 +40,7 @@ class App extends React.Component {
     for (const token of this.state.tokens) {
       result = result.replace(token, `<span class="matched">${token}</span>`)
     }
-    return result;
+    return result.replace('\n', '<br/>');
   }
 
   _getTokens(text) {
@@ -48,7 +48,7 @@ class App extends React.Component {
   }
 
   _getPattern(tokens, text) {
-    return generateRegexPattern(tokens.map(tp => tp.replace('<', '').replace('>', '')), text);
+    return generateRegexPattern(tokens.map(tp => tp.replace(/{/g, '').replace(/}/g, '')), text);
   }
 
   _handleChange(e) {

@@ -6,7 +6,7 @@ export const exportTokens = (pattern, text) => {
   const tokens = [];
   let match = pattern.exec(text);
 
-  while (match !== null) {
+  while (match && match[1]) {
     tokens.push(match[1]);
     match = pattern.exec(text);
   }
@@ -26,30 +26,39 @@ const urlPattern = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9(
 const phoneNumberPattern = /[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}/mg;
 const uuidPattern = /[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}/mg;
 
+const patternExtractor = patternString => (tokens, text) => {
+  const extractedTokens = deduplicateTokens(exportTokens(new RegExp(patternString), text));
+  if (_.isEqual(tokens, extractedTokens)) {
+    return new RegExp(patternString);
+  }
+};
 
-const guessNumberAlphaPattern = (tokens, text) => {
-  const numberOfDigitsInTokens = tokens.map(t => (t.match(/\d/g) || []).length);
+export const guessNumberAlphaPattern = (tokens, text) => {
+  const numberOfDigitsInTokens = tokens.map(t => (exportTokens(/(\d+)/g, t)[0] || '').length);
   const minNumberInTokens = _.min(numberOfDigitsInTokens);
   const maxNumberInTokens = _.max(numberOfDigitsInTokens);
 
-  const numberOfAlphaInTokens = tokens.map(t => (t.match(/[a-zA-Z]/g) || []).length);
+  const numberOfAlphaInTokens = tokens.map(t => (exportTokens(/([a-zA-Z]+)/g, t)[0] || []).length);
   const minAlphaInTokens = _.min(numberOfAlphaInTokens);
   const maxAlphaInTokens = _.max(numberOfAlphaInTokens);
 
-  const numberPatternPart = `\d{${minNumberInTokens},${maxNumberInTokens}`;
-  const alphaNumberPart = `[a-zA-Z]{${minAlphaInTokens},${maxAlphaInTokens}`;
+  const numberPatternPart = `\\d{${minNumberInTokens},${maxNumberInTokens}}`;
+  const alphaNumberPart = `[a-zA-Z]{${minAlphaInTokens},${maxAlphaInTokens}}`;
 
   for (const patternString of [
-    `${numberPatternPart}${alphaNumberPart}`,
-    `${alphaNumberPart}${numberPatternPart}`,
-    `${numberPatternPart}${alphaNumberPart}${numberPatternPart}${alphaNumberPart}`,
-    `${alphaNumberPart}${numberPatternPart}${alphaNumberPart}${numberPatternPart}`,
-    `${numberPatternPart}${alphaNumberPart}${numberPatternPart}${alphaNumberPart}${numberPatternPart}${alphaNumberPart}`,
-    `${alphaNumberPart}${numberPatternPart}${alphaNumberPart}${numberPatternPart}${alphaNumberPart}${numberPatternPart}`,
+    `(${numberPatternPart}${alphaNumberPart})`,
+    `(${alphaNumberPart}${numberPatternPart})`,
+
+    `(${numberPatternPart}${alphaNumberPart}${numberPatternPart})`,
+    `(${alphaNumberPart}${numberPatternPart}${alphaNumberPart})`,
+
+    `(${numberPatternPart}${alphaNumberPart}${numberPatternPart}${alphaNumberPart})`,
+    `(${alphaNumberPart}${numberPatternPart}${alphaNumberPart}${numberPatternPart})`,
   ]) {
-    const extractedTokens = deduplicateTokens(exportTokens(new RegExp(patternString), text));
+
+    const extractedTokens = deduplicateTokens(exportTokens(new RegExp(patternString, 'g'), text));
     if (_.isEqual(tokens, extractedTokens)) {
-      return new RegExp(patternString);
+      return new RegExp(patternString, 'g');
     }
 
   }
@@ -58,27 +67,27 @@ const guessNumberAlphaPattern = (tokens, text) => {
 export default function generateRegexPattern(tokens, text) {
   const naivePattern = new RegExp(tokens.length > 1 ? `(${tokens.join('|')})` : tokens, 'g');
 
-  const textWithoutMarkup = text.replace('{', '').replace('}', '');
-
+  const textWithoutMarkup = text.replace(/{/g, '').replace(/}/g, '');
 
   const patternCandidates = [
-    ipPattern,
-    ipv6Pattern,
-    phoneNumberPattern,
-    numberPattern,
-    emailPattern,
-    datePattern,
-    wordPattern,
-    macAddressPattern,
-    urlPattern,
-    uuidPattern,
-    hashPattern,
+    patternExtractor(ipPattern),
+    patternExtractor(ipv6Pattern),
+    patternExtractor(phoneNumberPattern),
+    patternExtractor(numberPattern),
+    patternExtractor(emailPattern),
+    patternExtractor(datePattern),
+    patternExtractor(wordPattern),
+    patternExtractor(macAddressPattern),
+    patternExtractor(urlPattern),
+    patternExtractor(uuidPattern),
+    guessNumberAlphaPattern,
+    patternExtractor(hashPattern),
   ];
 
-  for (const patternCandidate of patternCandidates) {
-    const extractedTokens = deduplicateTokens(exportTokens(patternCandidate, textWithoutMarkup));
-    if (_.isEqual(tokens, extractedTokens)) {
-      return patternCandidate;
+  for (const patternCandidateExtractor of patternCandidates) {
+    const pattern = patternCandidateExtractor(tokens, textWithoutMarkup);
+    if (pattern){
+      return pattern;
     }
   }
 

@@ -24,6 +24,7 @@ class App extends React.Component {
     const tokens = this._getTokens(initialText);
 
     this.state = {
+      initialText,
       text: initialText,
       pattern: this._getPattern(tokens, initialText),
       patternCopied: false,
@@ -51,7 +52,7 @@ class App extends React.Component {
   }
 
   _handleChange(e) {
-    const text = e.currentTarget.innerText;
+    const text = e.target.value;
     this.setState({text});
     let tokens = this._getTokens(text);
     // const lines = text.split(/\r?\n/).filter(v => !!v);
@@ -67,12 +68,7 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <div
-          className='textArea'
-          contentEditable="true"
-          data-ph='Type your examples here'
-          onInput={this._handleChange}
-        >{this.state.text}</div>
+        <textarea className='textArea' onChange={this._handleChange}>{this.state.initialText}</textarea>
         <div className='output' dangerouslySetInnerHTML={{__html: this._getHighlightedTokensText()}}/>
         {this.state.pattern && (<div>
           <p>Seems your pattern is: <b>{this.state.pattern.toString()}</b> <CopyToClipboard text={this.state.pattern}

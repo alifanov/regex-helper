@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 
-import generateRegexPattern, {exportTokens, deduplicateTokens} from "./regexGenerator";
+import generateRegexPattern, {exportTokens, deduplicateTokens} from "./RegexGenerator";
 
 const Checkbox = ({key, label, handleChange}) => {
   return (<label>

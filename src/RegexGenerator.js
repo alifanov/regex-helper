@@ -17,12 +17,12 @@ export const exportTokens = (pattern, text) => {
 export default function generateRegexPattern(tokens, text) {
   const naivePattern = new RegExp(tokens.length > 1 ? `(${tokens.join('|')})` : tokens, 'g');
 
-  const textWithoutMarkup = text.replace('<', '').replace('>', '');
+  const textWithoutMarkup = text.replace('{', '').replace('}', '');
 
   const wordPattern = /([a-zA-Z]+)/mg;
   const numberPattern = /(\d+)/mg;
   const datePattern = /(\d{1,2}[.-]\d{1,2}[.-]\d{2,4})/mg;
-  const hashPattern = /([a-zA-Z\d]+)/mg;
+  const hashPattern = /(\d+[a-zA-Z]+\w*|[a-zA-Z]+\d+\w*)/mg;
 
   const patternCandidates = [
     numberPattern,
@@ -33,6 +33,7 @@ export default function generateRegexPattern(tokens, text) {
 
   for (const patternCandidate of patternCandidates) {
     const extractedTokens = deduplicateTokens(exportTokens(patternCandidate, textWithoutMarkup));
+    console.log(patternCandidate, tokens, extractedTokens)
     if (_.isEqual(tokens, extractedTokens)) {
       return patternCandidate;
     }

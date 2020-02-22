@@ -17,8 +17,3 @@ code {
   color: #5f5f5f;
   border: 1px solid gray;
 }
-
-[contentEditable=true].textArea:empty:not(:focus)::before{
-  content:attr(data-ph);
-  font-style: italic;
-}

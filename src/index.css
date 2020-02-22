@@ -11,3 +11,14 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.textArea {
+  padding: 10px;
+  color: #5f5f5f;
+  border: 1px solid gray;
+}
+
+[contentEditable=true].textArea:empty:not(:focus)::before{
+  content:attr(data-ph);
+  font-style: italic;
+}

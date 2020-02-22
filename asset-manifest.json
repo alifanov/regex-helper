@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/regex-helper/static/css/main.db11695d.chunk.css",
+    "main.js": "/regex-helper/static/js/main.eafc95ca.chunk.js",
+    "main.js.map": "/regex-helper/static/js/main.eafc95ca.chunk.js.map",
+    "runtime-main.js": "/regex-helper/static/js/runtime-main.a71c3447.js",
+    "runtime-main.js.map": "/regex-helper/static/js/runtime-main.a71c3447.js.map",
+    "static/js/2.37f74c98.chunk.js": "/regex-helper/static/js/2.37f74c98.chunk.js",
+    "static/js/2.37f74c98.chunk.js.map": "/regex-helper/static/js/2.37f74c98.chunk.js.map",
+    "index.html": "/regex-helper/index.html",
+    "precache-manifest.dd45ae91eaf24eec8195cfa4cc1cf4f9.js": "/regex-helper/precache-manifest.dd45ae91eaf24eec8195cfa4cc1cf4f9.js",
+    "service-worker.js": "/regex-helper/service-worker.js",
+    "static/css/main.db11695d.chunk.css.map": "/regex-helper/static/css/main.db11695d.chunk.css.map",
+    "static/js/2.37f74c98.chunk.js.LICENSE.txt": "/regex-helper/static/js/2.37f74c98.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.a71c3447.js",
+    "static/js/2.37f74c98.chunk.js",
+    "static/css/main.db11695d.chunk.css",
+    "static/js/main.eafc95ca.chunk.js"
+  ]
+}

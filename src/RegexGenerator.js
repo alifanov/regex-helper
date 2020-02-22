@@ -33,7 +33,6 @@ export default function generateRegexPattern(tokens, text) {
 
   for (const patternCandidate of patternCandidates) {
     const extractedTokens = deduplicateTokens(exportTokens(patternCandidate, textWithoutMarkup));
-    console.log(patternCandidate, tokens, extractedTokens)
     if (_.isEqual(tokens, extractedTokens)) {
       return patternCandidate;
     }

@@ -1,5 +1,6 @@
 import React from 'react';
-import ContentEditable from 'react-contenteditable'
+import {CopyToClipboard} from 'react-copy-to-clipboard';
+
 
 import './App.css';
 
@@ -25,6 +26,7 @@ class App extends React.Component {
     this.state = {
       text: initialText,
       pattern: this._getPattern(tokens, initialText),
+      patternCopied: false,
       tokens: tokens,
     };
     this.contentEditable = React.createRef();
@@ -32,19 +34,19 @@ class App extends React.Component {
 
   }
 
-  _getHighlightedTokensText(){
+  _getHighlightedTokensText() {
     let result = this.state.text;
-    for(const token of this.state.tokens){
+    for (const token of this.state.tokens) {
       result = result.replace(token, `<span class="matched">${token}</span>`)
     }
     return result;
   }
 
-  _getTokens(text){
+  _getTokens(text) {
     return deduplicateTokens(exportTokens(this.tokenPattern, text));
   }
 
-  _getPattern(tokens, text){
+  _getPattern(tokens, text) {
     return generateRegexPattern(tokens.map(tp => tp.replace('<', '').replace('>', '')), text);
   }
 
@@ -73,7 +75,14 @@ class App extends React.Component {
         >{this.state.text}</div>
         <div className='output' dangerouslySetInnerHTML={{__html: this._getHighlightedTokensText()}}/>
         {this.state.pattern && (<div>
-          <p>Seems your pattern is: <b>{this.state.pattern.toString()}</b></p>
+          <p>Seems your pattern is: <b>{this.state.pattern.toString()}</b> <CopyToClipboard text={this.state.pattern}
+                                                                                            onCopy={() => {
+                                                                                              this.setState({patternCopied: true});
+                                                                                              setTimeout(() => this.setState({patternCopied: false}), 1000)
+                                                                                            }}>
+            <button>Copy to clipboard with button</button>
+          </CopyToClipboard>         {this.state.patternCopied ? <span style={{color: 'red'}}>Copied.</span> : null}
+          </p>
           {/*{this.state.tokens.map((t, i) => <div>{t}: {["number", "text", "date"].map(_type => <Checkbox key={i}*/}
           {/*                                                                                              label={_type}/>)}</div>)}*/}
         </div>)}

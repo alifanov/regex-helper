@@ -32,6 +32,14 @@ class App extends React.Component {
 
   }
 
+  _getHighlightedTokensText(){
+    let result = this.state.text;
+    for(const token of this.state.tokens){
+      result = result.replace(token, `<span class="matched">${token}</span>`)
+    }
+    return result;
+  }
+
   _getTokens(text){
     return deduplicateTokens(exportTokens(this.tokenPattern, text));
   }
@@ -41,7 +49,7 @@ class App extends React.Component {
   }
 
   _handleChange(e) {
-    const text = e.target.value;
+    const text = e.currentTarget.innerText;
     this.setState({text});
     let tokens = this._getTokens(text);
     // const lines = text.split(/\r?\n/).filter(v => !!v);
@@ -57,16 +65,15 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <ContentEditable
+        <div
           className='textArea'
-          innerRef={this.contentEditable}
-          html={this.state.text}
-          disabled={false}
-          onChange={this._handleChange}
-          tagName='article'
-           />
+          contentEditable="true"
+          data-ph='Type your examples here'
+          onInput={this._handleChange}
+        >{this.state.text}</div>
+        <div className='output' dangerouslySetInnerHTML={{__html: this._getHighlightedTokensText()}}/>
         {this.state.pattern && (<div>
-          <p>It seems like: {this.state.pattern.toString()}</p>
+          <p>Seems your pattern is: <b>{this.state.pattern.toString()}</b></p>
           {/*{this.state.tokens.map((t, i) => <div>{t}: {["number", "text", "date"].map(_type => <Checkbox key={i}*/}
           {/*                                                                                              label={_type}/>)}</div>)}*/}
         </div>)}

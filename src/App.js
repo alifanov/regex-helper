@@ -76,8 +76,8 @@ class App extends React.Component {
                                                                                               this.setState({patternCopied: true});
                                                                                               setTimeout(() => this.setState({patternCopied: false}), 1000)
                                                                                             }}>
-            <button>Copy to clipboard with button</button>
-          </CopyToClipboard>         {this.state.patternCopied ? <span style={{color: 'red'}}>Copied.</span> : null}
+            <button>Copy to clipboard</button>
+          </CopyToClipboard>         {this.state.patternCopied ? <span style={{color: 'red'}}>Copied</span> : null}
           </p>
           {/*{this.state.tokens.map((t, i) => <div>{t}: {["number", "text", "date"].map(_type => <Checkbox key={i}*/}
           {/*                                                                                              label={_type}/>)}</div>)}*/}

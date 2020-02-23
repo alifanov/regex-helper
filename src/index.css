@@ -33,3 +33,7 @@ code {
 .jumbotron {
   padding: 15px;
 }
+
+.github-fork-ribbon:before{
+  background-color: #090;
+}

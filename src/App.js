@@ -96,7 +96,7 @@ class App extends React.Component {
             {/*                                                                                              label={_type}/>)}</div>)}*/}
           </div>)}
           <div className="complain-guide text-center">
-            <p>Please, don't hesitate creating <a href="https://github.com/alifanov/regex-helper/issues">issues on Github</a></p>
+            <p>Please, don't hesitate to create <a href="https://github.com/alifanov/regex-helper/issues">issues on Github</a></p>
           </div>
         </div>
       </div>

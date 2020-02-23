@@ -95,6 +95,9 @@ class App extends React.Component {
             {/*{this.state.tokens.map((t, i) => <div>{t}: {["number", "text", "date"].map(_type => <Checkbox key={i}*/}
             {/*                                                                                              label={_type}/>)}</div>)}*/}
           </div>)}
+          <div className="complain-guide text-center">
+            <p>Please, don't hesitate creating <a href="https://github.com/alifanov/regex-helper/issues">issues on Github</a></p>
+          </div>
         </div>
       </div>
     );

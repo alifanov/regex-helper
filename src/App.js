@@ -1,5 +1,7 @@
 import React from 'react';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCopy } from '@fortawesome/free-regular-svg-icons'
 
 
 import './App.css';
@@ -36,11 +38,11 @@ class App extends React.Component {
   }
 
   _getHighlightedTokensText() {
-    let result = this.state.text;
+    let result = this.state.text.replace(/{/g, '').replace(/}/g, '');
     for (const token of this.state.tokens) {
-      result = result.replace(token, `<span class="matched">${token}</span>`)
+      result = result.replace(token, `<span class="badge badge-success">${token}</span>`)
     }
-    return result.replace('\n', '<br/>');
+    return result.replace(/\n/g, '<br/>');
   }
 
   _getTokens(text) {
@@ -68,20 +70,32 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <textarea className='textArea' onChange={this._handleChange}>{this.state.initialText}</textarea>
-        <div className='output' dangerouslySetInnerHTML={{__html: this._getHighlightedTokensText()}}/>
-        {this.state.pattern && (<div>
-          <p>Seems your pattern is: <b>{this.state.pattern.toString()}</b> <CopyToClipboard text={this.state.pattern}
-                                                                                            onCopy={() => {
-                                                                                              this.setState({patternCopied: true});
-                                                                                              setTimeout(() => this.setState({patternCopied: false}), 1000)
-                                                                                            }}>
-            <button>Copy to clipboard</button>
-          </CopyToClipboard>         {this.state.patternCopied ? <span style={{color: 'red'}}>Copied</span> : null}
-          </p>
-          {/*{this.state.tokens.map((t, i) => <div>{t}: {["number", "text", "date"].map(_type => <Checkbox key={i}*/}
-          {/*                                                                                              label={_type}/>)}</div>)}*/}
-        </div>)}
+        <nav className="navbar navbar-expand-lg navbar-light bg-light justify-content-center">
+          <a className="navbar-brand" href="/">Regex Helper</a>
+        </nav>
+        <div className='container'>
+          <div className='block'>
+            Use <code>{}</code> brackets to wrap tokens you want to extract from text
+          </div>
+          <div className="block">
+            <textarea className='textArea form-control' rows={5} onChange={this._handleChange}>{this.state.initialText}</textarea>
+          </div>
+          <div className="jumbotron">
+            <div className='output' dangerouslySetInnerHTML={{__html: this._getHighlightedTokensText()}}/>
+          </div>
+          {this.state.pattern && (<div>
+            <p>Seems your pattern is: <code>{this.state.pattern.toString()}</code> <CopyToClipboard text={this.state.pattern}
+                                                                                                    onCopy={() => {
+                                                                                                      this.setState({patternCopied: true});
+                                                                                                      setTimeout(() => this.setState({patternCopied: false}), 1000)
+                                                                                                    }}>
+              <FontAwesomeIcon icon={faCopy} />
+            </CopyToClipboard>         {this.state.patternCopied ? <span style={{color: 'grey'}}>Copied</span> : null}
+            </p>
+            {/*{this.state.tokens.map((t, i) => <div>{t}: {["number", "text", "date"].map(_type => <Checkbox key={i}*/}
+            {/*                                                                                              label={_type}/>)}</div>)}*/}
+          </div>)}
+        </div>
       </div>
     );
   }

@@ -75,7 +75,7 @@ class App extends React.Component {
         </nav>
         <div className='container'>
           <div className='block'>
-            Use <code>{}</code> brackets to wrap tokens you want to extract from text
+            Use <code>{'{'}{'}'}</code> brackets to wrap tokens you want to extract from text
           </div>
           <div className="block">
             <textarea className='textArea form-control' rows={5} onChange={this._handleChange}>{this.state.initialText}</textarea>

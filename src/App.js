@@ -71,7 +71,7 @@ class App extends React.Component {
     return (
       <div>
         <nav className="navbar navbar-expand-lg navbar-light bg-light justify-content-center">
-          <a className="navbar-brand" href="/">Regex Helper</a>
+          <a className="navbar-brand" href="/"><h1>Regex Helper</h1></a>
         </nav>
         <div className='container'>
           <div className='block'>

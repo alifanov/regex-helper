@@ -42,8 +42,8 @@ export const guessNumberAlphaPattern = (tokens, text) => {
   const minAlphaInTokens = _.min(numberOfAlphaInTokens);
   const maxAlphaInTokens = _.max(numberOfAlphaInTokens);
 
-  const numberPatternPart = `\\d{${minNumberInTokens},${maxNumberInTokens}}`;
-  const alphaNumberPart = `[a-zA-Z]{${minAlphaInTokens},${maxAlphaInTokens}}`;
+  const numberPatternPart = minNumberInTokens !== maxNumberInTokens ? `\\d{${minNumberInTokens},${maxNumberInTokens}}` : `\\d{${minNumberInTokens}}`;
+  const alphaNumberPart = minAlphaInTokens !== maxAlphaInTokens ? `[a-zA-Z]{${minAlphaInTokens},${maxAlphaInTokens}}` : `[a-zA-Z]{${minAlphaInTokens}}`;
 
   for (const patternString of [
     `(${numberPatternPart}${alphaNumberPart})`,

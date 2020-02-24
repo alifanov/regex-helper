@@ -22,7 +22,7 @@ class App extends React.Component {
 
     this.tokenPattern = /{([^}]*)}/g;
 
-    const initialText = 'my postcode is {BC123DO}\nthis is your postcode {aa321sd}';
+    const initialText = 'my postcode is {BC123DO}\nthis is your postcode {aa321sd}\nthis is wrong postcode aa132ee';
     const tokens = this._getTokens(initialText);
 
     this.state = {

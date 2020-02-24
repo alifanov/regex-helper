@@ -34,8 +34,8 @@ const patternExtractor = patternString => (tokens, text) => {
 };
 
 const partInTokens = (part, tokens) => {
-  for(const token of tokens){
-    if(token.includes(part)){
+  for (const token of tokens) {
+    if (token.includes(part)) {
       return true;
     }
   }
@@ -71,16 +71,34 @@ export const guessNumberAlphaPattern = (tokens, text) => {
   for (const patternString of candidates) {
     const extractedTokens = deduplicateTokens(exportTokens(new RegExp(`(${patternString})`, 'g'), text));
     if (_.isEqual(tokens, extractedTokens)) {
-      return new RegExp(patternString, 'g');
+      return new RegExp(`(${patternString})`, 'g');
     }
   }
 
   for (const patternString of candidates) {
-    for(const negPart of allTextParts){
+    for (const negPart of allTextParts) {
       const negPattern = `((?!${negPart})${patternString})`;
       const extractedTokens = deduplicateTokens(exportTokens(new RegExp(negPattern, 'g'), text));
       if (_.isEqual(tokens, extractedTokens)) {
         return new RegExp(negPattern, 'g');
+      }
+    }
+  }
+
+  for (const negPart of allTextParts) {
+    for (const patternString of [
+      `(${numberPatternPart}(?!${negPart})${alphaNumberPart})`,
+      `(${alphaNumberPart}(?!${negPart})${numberPatternPart})`,
+
+      `(${numberPatternPart}${alphaNumberPart}(?!${negPart})${numberPatternPart})`,
+      `(${alphaNumberPart}${numberPatternPart}(?!${negPart})${alphaNumberPart})`,
+
+      `(${numberPatternPart}${alphaNumberPart}${numberPatternPart}(?!${negPart})${alphaNumberPart})`,
+      `(${alphaNumberPart}${numberPatternPart}${alphaNumberPart}(?!${negPart})${numberPatternPart})`,
+    ]) {
+      const extractedTokens = deduplicateTokens(exportTokens(new RegExp(patternString, 'g'), text));
+      if (_.isEqual(tokens, extractedTokens)) {
+        return new RegExp(patternString, 'g');
       }
     }
   }
@@ -108,7 +126,7 @@ export default function generateRegexPattern(tokens, text) {
 
   for (const patternCandidateExtractor of patternCandidates) {
     const pattern = patternCandidateExtractor(tokens, textWithoutMarkup);
-    if (pattern){
+    if (pattern) {
       return pattern;
     }
   }

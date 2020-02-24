@@ -33,7 +33,19 @@ const patternExtractor = patternString => (tokens, text) => {
   }
 };
 
+const partInTokens = (part, tokens) => {
+  for(const token of tokens){
+    if(token.includes(part)){
+      return true;
+    }
+  }
+  return false;
+};
+
 export const guessNumberAlphaPattern = (tokens, text) => {
+  let allTextParts = exportTokens(/([a-zA-Z]+)/g, text);
+  allTextParts = allTextParts.filter(p => !partInTokens(p, tokens));
+
   const numberOfDigitsInTokens = tokens.map(t => (exportTokens(/(\d+)/g, t)[0] || '').length);
   const minNumberInTokens = _.min(numberOfDigitsInTokens);
   const maxNumberInTokens = _.max(numberOfDigitsInTokens);
@@ -45,22 +57,32 @@ export const guessNumberAlphaPattern = (tokens, text) => {
   const numberPatternPart = minNumberInTokens !== maxNumberInTokens ? `\\d{${minNumberInTokens},${maxNumberInTokens}}` : `\\d{${minNumberInTokens}}`;
   const alphaNumberPart = minAlphaInTokens !== maxAlphaInTokens ? `[a-zA-Z]{${minAlphaInTokens},${maxAlphaInTokens}}` : `[a-zA-Z]{${minAlphaInTokens}}`;
 
-  for (const patternString of [
-    `(${numberPatternPart}${alphaNumberPart})`,
-    `(${alphaNumberPart}${numberPatternPart})`,
+  const candidates = [
+    `${numberPatternPart}${alphaNumberPart}`,
+    `${alphaNumberPart}${numberPatternPart}`,
 
-    `(${numberPatternPart}${alphaNumberPart}${numberPatternPart})`,
-    `(${alphaNumberPart}${numberPatternPart}${alphaNumberPart})`,
+    `${numberPatternPart}${alphaNumberPart}${numberPatternPart}`,
+    `${alphaNumberPart}${numberPatternPart}${alphaNumberPart}`,
 
-    `(${numberPatternPart}${alphaNumberPart}${numberPatternPart}${alphaNumberPart})`,
-    `(${alphaNumberPart}${numberPatternPart}${alphaNumberPart}${numberPatternPart})`,
-  ]) {
+    `${numberPatternPart}${alphaNumberPart}${numberPatternPart}${alphaNumberPart}`,
+    `${alphaNumberPart}${numberPatternPart}${alphaNumberPart}${numberPatternPart}`,
+  ];
 
-    const extractedTokens = deduplicateTokens(exportTokens(new RegExp(patternString, 'g'), text));
+  for (const patternString of candidates) {
+    const extractedTokens = deduplicateTokens(exportTokens(new RegExp(`(${patternString})`, 'g'), text));
     if (_.isEqual(tokens, extractedTokens)) {
       return new RegExp(patternString, 'g');
     }
+  }
 
+  for (const patternString of candidates) {
+    for(const negPart of allTextParts){
+      const negPattern = `((?!${negPart})${patternString})`;
+      const extractedTokens = deduplicateTokens(exportTokens(new RegExp(negPattern, 'g'), text));
+      if (_.isEqual(tokens, extractedTokens)) {
+        return new RegExp(negPattern, 'g');
+      }
+    }
   }
 };
 

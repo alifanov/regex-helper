@@ -9,13 +9,6 @@ import './App.css';
 
 import generateRegexPattern, {exportTokens, deduplicateTokens} from "./RegexGenerator";
 
-const Checkbox = ({key, label, handleChange}) => {
-  return (<label>
-    <input type="checkbox" onChange={handleChange}/>
-    {label}
-  </label>)
-};
-
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -31,10 +24,11 @@ class App extends React.Component {
       pattern: this._getPattern(tokens, initialText),
       patternCopied: false,
       tokens: tokens,
+      inProgress: false
     };
     this.contentEditable = React.createRef();
     this._handleChange = this._handleChange.bind(this);
-
+    this._guessPattern = this._guessPattern.bind(this);
   }
 
   _getHighlightedTokensText() {
@@ -56,18 +50,24 @@ class App extends React.Component {
   _handleChange(e) {
     const text = e.target.value;
     this.setState({text});
-    let tokens = this._getTokens(text);
-    // const lines = text.split(/\r?\n/).filter(v => !!v);
-    if (tokens.length > 0) {
-      this.setState({tokens});
-      const pattern = this._getPattern(tokens, text);
-      if (pattern) {
-        this.setState({pattern});
+  }
+
+  _guessPattern(){
+    const text = this.state.text;
+    this.setState({inProgress: true});
+    setTimeout(() => {
+      const tokens = this._getTokens(text);
+      if (tokens.length > 0) {
+        const pattern = this._getPattern(tokens, text);
+        if (pattern) {
+          this.setState(s => ({pattern, tokens, inProgress: false}));
+        }
       }
-    }
+    });
   }
 
   render() {
+    const {inProgress} = this.state;
     return (
       <div>
         <nav className="navbar navbar-expand-lg navbar-light bg-light justify-content-center">
@@ -78,8 +78,13 @@ class App extends React.Component {
             Use <code>{'{'}{'}'}</code> brackets to wrap tokens you want to extract from text
           </div>
           <div className="block">
-            <textarea className='textArea form-control' rows={5} onChange={this._handleChange}>{this.state.initialText}</textarea>
+            <textarea className='textArea form-control' defaultValue={this.state.initialText} rows={5} onChange={this._handleChange}/>
           </div>
+
+          <div className="block">
+            <button key='run_btn' className={`btn btn-${inProgress ? 'secondary' : 'success'}`} disabled={inProgress} onClick={this._guessPattern}>{inProgress ? 'Generating...' : 'Generate pattern'}</button>
+          </div>
+
           <div className="jumbotron">
             <div className='output' dangerouslySetInnerHTML={{__html: this._getHighlightedTokensText()}}/>
           </div>
@@ -92,8 +97,6 @@ class App extends React.Component {
               <FontAwesomeIcon icon={faCopy} />
             </CopyToClipboard>         {this.state.patternCopied ? <span style={{color: 'grey'}}>Copied</span> : null}
             </p>
-            {/*{this.state.tokens.map((t, i) => <div>{t}: {["number", "text", "date"].map(_type => <Checkbox key={i}*/}
-            {/*                                                                                              label={_type}/>)}</div>)}*/}
           </div>)}
           <div className="complain-guide text-center">
             <p>Please, don't hesitate to create <a href="https://github.com/alifanov/regex-helper/issues">issues on Github</a></p>

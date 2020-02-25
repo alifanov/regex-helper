@@ -1,5 +1,7 @@
 import _ from 'lodash';
 
+import combinations from 'combinations';
+
 export const deduplicateTokens = tokens => [...new Set(tokens)];
 
 export const exportTokens = (pattern, text) => {
@@ -63,9 +65,6 @@ export const guessNumberAlphaPattern = (tokens, text) => {
 
     `${numberPatternPart}${alphaNumberPart}${numberPatternPart}`,
     `${alphaNumberPart}${numberPatternPart}${alphaNumberPart}`,
-
-    `${numberPatternPart}${alphaNumberPart}${numberPatternPart}${alphaNumberPart}`,
-    `${alphaNumberPart}${numberPatternPart}${alphaNumberPart}${numberPatternPart}`,
   ];
 
   for (const patternString of candidates) {
@@ -76,8 +75,9 @@ export const guessNumberAlphaPattern = (tokens, text) => {
   }
 
   for (const patternString of candidates) {
-    for (const negPart of allTextParts) {
-      const negPattern = `((?!${negPart})${patternString})`;
+    for (const negPart of combinations(allTextParts)) {
+      const negPartPattern = negPart.map(p => `(?!${p})`).join('');
+      const negPattern = `(${negPartPattern}${patternString})`;
       const extractedTokens = deduplicateTokens(exportTokens(new RegExp(negPattern, 'g'), text));
       if (_.isEqual(tokens, extractedTokens)) {
         return new RegExp(negPattern, 'g');
@@ -85,16 +85,14 @@ export const guessNumberAlphaPattern = (tokens, text) => {
     }
   }
 
-  for (const negPart of allTextParts) {
+  for (const negPart of combinations(allTextParts)) {
+    const negPartPattern = negPart.map(p => `(?!${p})`).join('');
     for (const patternString of [
-      `(${numberPatternPart}(?!${negPart})${alphaNumberPart})`,
-      `(${alphaNumberPart}(?!${negPart})${numberPatternPart})`,
+      `(${numberPatternPart}${negPartPattern}${alphaNumberPart})`,
+      `(${alphaNumberPart}${negPartPattern}${numberPatternPart})`,
 
-      `(${numberPatternPart}${alphaNumberPart}(?!${negPart})${numberPatternPart})`,
-      `(${alphaNumberPart}${numberPatternPart}(?!${negPart})${alphaNumberPart})`,
-
-      `(${numberPatternPart}${alphaNumberPart}${numberPatternPart}(?!${negPart})${alphaNumberPart})`,
-      `(${alphaNumberPart}${numberPatternPart}${alphaNumberPart}(?!${negPart})${numberPatternPart})`,
+      `(${numberPatternPart}${alphaNumberPart}${negPartPattern}${numberPatternPart})`,
+      `(${alphaNumberPart}${numberPatternPart}${negPartPattern}${alphaNumberPart})`,
     ]) {
       const extractedTokens = deduplicateTokens(exportTokens(new RegExp(patternString, 'g'), text));
       if (_.isEqual(tokens, extractedTokens)) {

@@ -13,6 +13,7 @@
     "@testing-library/user-event": "^7.2.1",
     "bootstrap": "^4.4.1",
     "bootswatch": "^4.4.1",
+    "combinations": "^1.0.0",
     "gh-pages": "^2.2.0",
     "github-fork-ribbon-css": "^0.2.3",
     "lodash": "^4.17.15",

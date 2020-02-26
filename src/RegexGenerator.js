@@ -45,7 +45,7 @@ const partInTokens = (part, tokens) => {
 };
 
 export const guessNumberAlphaPattern = (tokens, text) => {
-  let allTextParts = exportTokens(/([a-zA-Z]+)/g, text);
+  let allTextParts = _.uniq(exportTokens(/([a-zA-Z]+)/g, text));
   allTextParts = allTextParts.filter(p => !partInTokens(p, tokens));
 
   const numberOfDigitsInTokens = tokens.map(t => (exportTokens(/(\d+)/g, t)[0] || '').length);

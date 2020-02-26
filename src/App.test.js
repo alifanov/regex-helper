@@ -29,3 +29,7 @@ test('guess alnum pattern with exception after', () => {
 test('guess alnum pattern with multiple exception after', () => {
   expect(guessNumberAlphaPattern(['aa111bb', 'bb222aa'], 'A good code is aa111bb and bb222aa but aa222cc and aa222ee are a bad code')).toEqual(/([a-zA-Z]{2}\d{3}(?!cc)(?!ee)[a-zA-Z]{2})/g);
 });
+
+test('guess alnum pattern with multiple duplicates exception after', () => {
+  expect(guessNumberAlphaPattern(['aa111bb', 'bb222aa'], 'A good code is aa111bb and bb222aa but aa222cc and aa222ee are a bad code aa222ee are a bad code')).toEqual(/([a-zA-Z]{2}\d{3}(?!cc)(?!ee)[a-zA-Z]{2})/g);
+});
